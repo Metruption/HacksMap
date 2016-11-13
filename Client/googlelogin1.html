@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#connect {
+    text-align: center;
+    padding-top: 15px
+}
+#connect p {
+    color: #AAA;
+    margin-top: 20px
+}
+#res {
+    display: none
+}
+.panel {
+    width: 500px;
+    margin: 10px auto;
+}
+#info, .activity-author-info {
+    position: relative;
+    left: 10px;
+    width: calc(100% - 45px);
+}
+
+#info p, .activity-author-info p {
+    font-size: 0.9em
+}
+
+
+/* spinner by @tobiasahlin: http://tobiasahlin.com/spinkit/ */
+.spinner {
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+  margin: 20px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  -webkit-animation: bounce 2.0s infinite ease-in-out;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(0.0) }
+  50% { transform: scale(1.0) }
+}
+</style>
+
+<script src="../js/jquery-3.1.0.js"></script> 
+
+<script>
+var template = Handlebars.compile($('#entry-template').html())
+var activitiesTemplate = Handlebars.compile($('#activities-template').html())
+
+OAuth.initialize('MpnCNnhVAq_zL089ua883AevC1o')
+$('#connect button').click(function () {
+    OAuth.popup('google_plus', function (err, res) {
+        res.get('/plus/v1/people/me').done(function (me) {
+            $('#connect').slideUp('fast')
+            $('#res').html(template({
+                data: me
+            })).slideDown('fast')
+            
+            res.get('/plus/v1/people/me/activities/public').done(function(activities) {
+                $('#activities').html(activitiesTemplate({
+                    data: activities
+                }))
+            });
+        })
+    })
+})
+
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+    if(v1 === v2) {
+        return options.fn(this);
+    }
+    return options.inverse(this);
+})
+</script>
+
+
+
+</head>
+<body>
+
+<div id="connect">
+    <button class="btn btn-primary">Connect with Google+</button>
+    <p>If nothing happen after the connexion, it's maybe because the Google rate limit exceeded</p>
+</div>
+<div id="res"></div>
+
+<script id="entry-template" type="text/x-handlebars-template">
+    <div id="profile" class="panel panel-default">
+        <div class="panel-body">
+            <img src="{{data.image.url}}" class="img-thumbnail pull-left"/>
+            <div id="info">
+                <h4><a href="{{data.url}}" target="_blank">{{data.displayName}}</a></h4>
+                {{#each data.organizations}}
+                    {{#if primary}}
+                        <p>Works at {{name}}</p>
+                    {{/if}}
+                {{/each}}
+            </div>
+        </div>
+    </div>
+    <div id="activities">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <!-- spinner by @tobiasahlin: http://tobiasahlin.com/spinkit/ -->
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="activities-template" type="text/x-handlebars-template">
+    {{#each data.items}}
+    <div class="activity panel panel-default">
+        <div class="panel-body">
+            <img src="{{actor.image.url}}" class="activity-author img-thumbnail pull-left" />
+            <div class="activity-author-info">
+                <h4><a href="{{actor.url}}" target="_blank">{{actor.displayName}}</a></h4>
+                {{#if title}}
+                <p>{{title}}</p>
+                {{else}}
+                <p><a href="{{object.attachments.0.url}}">{{object.attachments.0.displayName}}</a></p>
+                {{/if}}
+            </div>
+        </div>
+        <div style="clear: left;">
+            {{#each object.attachments}}
+            <p style="padding: 0px 15px">
+                {{#ifCond objectType "photo"}}
+                <img style="width: 100%; position: relative;" src="{{image.url}}" />
+                {{/ifCond}}
+                {{#ifCond objectType "article"}}
+                {{content}}
+                {{/ifCond}}
+                {{#ifCond objectType "album"}}
+                <img style="width: 100%; position: relative;" src="{{thumbnails.0.image.url}}" />
+                {{/ifCond}}
+            </p>
+            {{/each}}
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+</body>
+<html>
