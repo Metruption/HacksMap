@@ -65,48 +65,38 @@
   0%, 100% { transform: scale(0.0) }
   50% { transform: scale(1.0) }
 }
+@font-face {
+    font-family: cgf;
+    src: url(css/cgf.ttf);
+}
+html, body{
+     font-family:cgf; 
+}
+h1 {
+
+}
+#login {
+right:100%;
+}
 </style>
 
-<script src="../js/jquery-3.1.0.js"></script> 
 
-<script>
-var template = Handlebars.compile($('#entry-template').html())
-var activitiesTemplate = Handlebars.compile($('#activities-template').html())
 
-OAuth.initialize('MpnCNnhVAq_zL089ua883AevC1o')
-$('#connect button').click(function () {
-    OAuth.popup('google_plus', function (err, res) {
-        res.get('/plus/v1/people/me').done(function (me) {
-            $('#connect').slideUp('fast')
-            $('#res').html(template({
-                data: me
-            })).slideDown('fast')
-            
-            res.get('/plus/v1/people/me/activities/public').done(function(activities) {
-                $('#activities').html(activitiesTemplate({
-                    data: activities
-                }))
-            });
-        })
-    })
-})
 
-Handlebars.registerHelper('ifCond', function(v1, v2, options) {
-    if(v1 === v2) {
-        return options.fn(this);
-    }
-    return options.inverse(this);
-})
-</script>
+
+<script src="js/jquery-3.1.0.js"></script> 
+<script src="js/handlebars.js"></script> 
+
+
 
 
 
 </head>
 <body>
+<h1>HacksMap</h1>
 
-<div id="connect">
-    <button class="btn btn-primary">Connect with Google+</button>
-    <p>If nothing happen after the connexion, it's maybe because the Google rate limit exceeded</p>
+<div id="connect" >
+    <button id="login"class="btn btn-primary">Login With Google</button>
 </div>
 <div id="res"></div>
 
@@ -169,6 +159,37 @@ Handlebars.registerHelper('ifCond', function(v1, v2, options) {
     </div>
     {{/each}}
 </script>
+
+<script>
+var template = Handlebars.compile($('#entry-template').html())
+var activitiesTemplate = Handlebars.compile($('#activities-template').html())
+
+OAuth.initialize('MpnCNnhVAq_zL089ua883AevC1o')
+$('#connect button').click(function () {
+    OAuth.popup('google_plus', function (err, res) {
+        res.get('/plus/v1/people/me').done(function (me) {
+            $('#connect').slideUp('fast')
+            $('#res').html(template({
+                data: me
+            })).slideDown('fast')
+            
+            res.get('/plus/v1/people/me/activities/public').done(function(activities) {
+                $('#activities').html(activitiesTemplate({
+                    data: activities
+                }))
+            });
+        })
+    })
+})
+
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+    if(v1 === v2) {
+        return options.fn(this);
+    }
+    return options.inverse(this);
+})
+</script>
+
 
 </body>
 <html>

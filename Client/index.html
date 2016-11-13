@@ -8,6 +8,7 @@
 <script src="js/lightbox.js"></script>
 <script type="text/javascript" src="js/noty/packaged/jquery.noty.packaged.js"></script> 
 
+
 <link rel="stylesheet" href="fancybox/source/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
 <script type="text/javascript" src="fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 <a class="fancybox" rel="group" href="googlelogin1.html"></a>
@@ -18,9 +19,22 @@
 <style>
     /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
+      
+    @font-face {
+    font-family: cgf;
+    src: url(css/cgf.ttf);
+}
     #map {
         height: 100%;
      }
+    #marker-tooltip {
+      display: none;
+      position:absolute;
+      width: 300px;
+      height: 200px;
+      background-color: #ccc;
+      margin: 15px;
+    }
      /* Optional: Makes the sample page fill the window. */
     html, body {
         height: 100%;
@@ -28,8 +42,10 @@
         padding: 0;
         background-color: rgba(0, 0, 0, 0);
         background:rgba(0, 0, 0, 0);
+        font-family:cgf;  
 
       }	
+     
 </style>	
 </head>
  
@@ -37,11 +53,12 @@
 <body onload="">
 
 
-<center><iframe id="myIframe" src="googlelogin1.html" style="width:400px;height:200px;"></iframe></center>
+
+<center><iframe id="myIframe" src="googlelogin1.html" style="width:100%;height:3%;"></iframe></center>
 
 <script type="text/javascript">
-$('#myIframe').load(function () {
-    alert("loaded '"+$(this).attr('src')+"'");
+$('#myIframe').on('load',function () {
+    
 });
 
 $('#myIframe').attr('src','googlelogin1.html')
@@ -62,6 +79,86 @@ $('#myIframe').attr('src','googlelogin1.html')
           center: {lat: -34.397, lng: 150.644},
           zoom: 6
         });
+        var myLatLng = {lat: 40.744679, lng: -73.984850};
+        var defhacks = new google.maps.LatLng(40.744679,-73.984850);
+        var defhacksimage = 'images/defhacks.png';
+
+ var myLatLng1 = new google.maps.LatLng(34.061706,-117.166351);
+        var myLatLng2 = {lat: 35.999226, lng: -78.947209};
+        var hackduke = new google.maps.LatLng(34.061706,-117.166351);
+        var hackdukeimage = 'images/hackduke.png';
+
+
+
+         var marker1 = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          icon: defhacksimage,
+          title: 'Def Hacks() NY.  November 19-20,12PM - 12PM'
+        });
+
+
+         var marker2 = new google.maps.Marker({
+          position: myLatLng2,
+          map: map,
+          icon: hackdukeimage,
+          title: 'HackDuke.  November 19-20, 2016, 10AM - 5:30 PM'
+        });
+
+marker1.tooltipContent = 'this content should go inside the tooltip';
+    var infoWindow = new google.maps.InfoWindow({
+        content: 'This is an info window'
+});
+
+google.maps.event.addListener(marker1, 'mouseover', function () {
+        var point = fromLatLngToPoint(marker1.getPosition(), map);
+        $('#marker-tooltip').html(marker1.tooltipContent + '<br>Pixel coordinates: ' + point.x + ', ' + point.y).css({
+            'left': point.x,
+                'top': point.y
+        }).show();
+    });    
+function fromLatLngToPoint(latLng, map) {
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
+    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+}
+
+
+
+
+
+
+marker2.tooltipContent = 'this content should go inside the tooltip';
+    var infoWindow = new google.maps.InfoWindow({
+        content: 'This is an info window'
+});
+
+google.maps.event.addListener(marker2, 'mouseover', function () {
+        var point = fromLatLngToPoint(marker2.getPosition(), map);
+        $('#marker-tooltip').html(marker2.tooltipContent + '<br>Pixel coordinates: ' + point.x + ', ' + point.y).css({
+            'left': point.x,
+                'top': point.y
+        }).show();
+    });    
+function fromLatLngToPoint(latLng, map) {
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
+    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+}
+
+
+
+
+
+
+
+
+
+
         var infoWindow = new google.maps.InfoWindow({map: map});
 
         // Try HTML5 geolocation.
@@ -94,6 +191,10 @@ $('#myIframe').attr('src','googlelogin1.html')
 
  <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADUo7IC_yrdcs8iWzGchAa9oA8PT05gnI&callback=initMap">
+
+   var googleMapsClient = require('@google/maps').createClient({
+  key: 'AIzaSyDqXDBxzcMAYGpvg_ami4dGkEadbULHxjs'
+}); 
   </script>
 
 
@@ -110,7 +211,9 @@ $('#myIframe').attr('src','googlelogin1.html')
   firebase.initializeApp(config);
 </script>
 
-<a href="googlelogin1.html" id="login" rel="Darwinismo - Parte 1">Darwinismo - Parte 1</a>
+
+
+
 
 
 </body>
